@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  chromadb:
+    image: ghcr.io/chroma-core/chroma:latest
+    container_name: chroma_db
+    ports:
+      - "8000:8000"
+    environment:
+      - IS_PERSISTENT=TRUE
+    volumes:
+      - chromadb_data:/chroma/chroma
+
+  app:
+    build: .
+    container_name: rag_app
+    ports:
+      - "8501:8501"
+    depends_on:
+      - chromadb
+    environment:
+      - CHROMA_HOST=http://chroma_db:8000
+      - OPENAI_API_KEY=your-api-key
+
+volumes:
+  chromadb_data:
